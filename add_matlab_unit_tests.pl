@@ -47,5 +47,5 @@ if ($? == 0) {
   }
 }
 else {
-  print("'matlab' command failed...not adding matlab unit tests");
+  print("'matlab' command failed...not adding matlab unit tests\n");
 }
