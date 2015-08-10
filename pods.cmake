@@ -184,7 +184,11 @@ function(pods_install_pkg_config_file)
         elseif(curmode STREQUAL CFLAGS)
             set(pc_cflags "${pc_cflags} ${word}")
 	elseif(curmode STREQUAL CLASSPATH)
-	    set(pc_classpath "${pc_classpath}:\${prefix}/share/java/${word}.jar")
+            if ("${pc_classpath}" STREQUAL "")
+	       set(pc_classpath "\${prefix}/share/java/${word}.jar")
+	    else 
+	       set(pc_classpath "${pc_classpath}:\${prefix}/share/java/${word}.jar")
+	    endif
         elseif(curmode STREQUAL REQUIRES)
             set(pc_requires "${pc_requires} ${word}")
         elseif(curmode STREQUAL VERSION)
