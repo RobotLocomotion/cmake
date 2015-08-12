@@ -150,7 +150,7 @@ function(lcmtypes_build_c)
   string(REGEX REPLACE "[^a-zA-Z0-9]" "_" __sanitized_project_name "${PROJECT_NAME}")
 
   if (NOT LCMTYPES_C_AGGREGATE_HEADER)
-    set(LCMTYPES_C_AGGREGATE_HEADER "${__sanitized_project_name}.h")
+    set(LCMTYPES_C_AGGREGATE_HEADER "${__sanitized_project_name}")
   endif()
   if (NOT LCMTYPES_C_LIBNAME)
     set(LCMTYPES_C_LIBNAME "${__sanitized_project_name}_lcmtypes")
@@ -213,7 +213,7 @@ function(lcmtypes_build_cpp)
   string(REGEX REPLACE "[^a-zA-Z0-9]" "_" __sanitized_project_name "${PROJECT_NAME}")
 
   if (NOT LCMTYPES_CPP_AGGREGATE_HEADER)
-    set(LCMTYPES_C_AGGREGATE_HEADER "${__sanitized_project_name}.hpp")
+    set(LCMTYPES_CPP_AGGREGATE_HEADER "${__sanitized_project_name}")
   endif()
 
   if (LCMTYPES_CPP_HEADERFILES)
