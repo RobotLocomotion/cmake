@@ -300,6 +300,8 @@ function(add_mex)
       set_target_properties(${target} PROPERTIES
         LINK_FLAGS_DEBUG	"${MEXLIB_LDDEBUGFLAGS} ${MEX_LDFLAGS}"
         LINK_FLAGS_RELEASE	"${MEXLIB_LDOPTIMFLAGS} ${MEX_LDFLAGS}"
+        LINK_FLAGS_MINSIZEREL	"${MEXLIB_LDFLAGS} ${MEX_LDOPTIMFLAGS}"
+        LINK_FLAGS_RELWITHDEBINFO	"${MEXLIB_LDFLAGS} ${MEX_LDDEBUGFLAGS} ${MEX_LDOPTIMFLAGS}"
       )
     endif()
   elseif (isshared GREATER -1)
@@ -316,6 +318,8 @@ function(add_mex)
       set_target_properties(${target} PROPERTIES
         LINK_FLAGS_DEBUG	"${__ldflags} ${MEX_LDDEBUGFLAGS}"
         LINK_FLAGS_RELEASE	"${__ldflags} ${MEX_LDOPTIMFLAGS}"
+        LINK_FLAGS_MINSIZEREL	"${__ldflags} ${MEX_LDOPTIMFLAGS}"
+        LINK_FLAGS_RELWITHDEBINFO	"${__ldflags} ${MEX_LDDEBUGFLAGS} ${MEX_LDOPTIMFLAGS}"
       )
     endif()
   else ()
@@ -326,6 +330,8 @@ function(add_mex)
       SUFFIX ".${MEX_EXT}"
       LINK_FLAGS_DEBUG	"${MEXLIB_LDFLAGS} ${MEX_LDDEBUGFLAGS}"
       LINK_FLAGS_RELEASE	"${MEXLIB_LDFLAGS} ${MEX_LDOPTIMFLAGS}"
+      LINK_FLAGS_MINSIZEREL	"${MEXLIB_LDFLAGS} ${MEX_LDOPTIMFLAGS}"
+      LINK_FLAGS_RELWITHDEBINFO	"${MEXLIB_LDFLAGS} ${MEX_LDDEBUGFLAGS} ${MEX_LDOPTIMFLAGS}"
       ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}"
       LIBRARY_OUTPUT_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}"
       )
@@ -333,7 +339,7 @@ function(add_mex)
       string( TOUPPER ${OUTPUTCONFIG} OUTPUTCONFIG )
       set_target_properties(${target} PROPERTIES
 	      ARCHIVE_OUTPUT_DIRECTORY_${OUTPUTCONFIG} "${CMAKE_CURRENT_SOURCE_DIR}"
-      	LIBRARY_OUTPUT_DIRECTORY_${OUTPUTCONFIG} "${CMAKE_CURRENT_SOURCE_DIR}"
+        	LIBRARY_OUTPUT_DIRECTORY_${OUTPUTCONFIG} "${CMAKE_CURRENT_SOURCE_DIR}"
 	      )
     endforeach()
 
@@ -341,7 +347,10 @@ function(add_mex)
       # see comment by the definition of liblast above
       set_target_properties(${target} PROPERTIES
         LINK_FLAGS_DEBUG "${MEX_LDDEBUGFLAGS}"
-        LINK_FLAGS_RELEASE "${MEX_LDOPTIMFLAGS}")
+        LINK_FLAGS_RELEASE "${MEX_LDOPTIMFLAGS}"
+        LINK_FLAGS_MINSIZEREL "${MEX_LDOPTIMFLAGS}"
+        LINK_FLAGS_RELWITHDEBINFO	"${MEX_LDDEBUGFLAGS} ${MEX_LDOPTIMFLAGS}"
+        )
       target_link_libraries(${target} liblast)
     endif()
   endif()
