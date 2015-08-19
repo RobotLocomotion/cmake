@@ -271,7 +271,7 @@ function(mex_setup)
 endfunction()
 
 function(add_mex)
-  # useage:  add_mex(target source1 source2 [SHARED,EXECUTABLE])
+  # useage:  add_mex(target source1 source2 [SHARED,EXECUTABLE] [OUTPUT_NAME mexfilename])
   # note: builds the mex file inplace (not into some build directory)
   # if SHARED is passed in, then it doesn't expect a mexFunction symbol to be defined, and compiles it to e.g., libtarget.so, for eventual linking against another mex file
   # if EXECUTABLE is passed in, then it adds an executable target, which is linked against the appropriate matlab libraries.
@@ -286,13 +286,23 @@ function(add_mex)
 
   include_directories( ${MATLAB_ROOT}/extern/include ${MATLAB_ROOT}/simulink/include )
 
+  list(FIND ARGV OUTPUT_NAME output_arg)
+  if (output_arg GREATER -1)
+    list(REMOVE_AT ARGV ${output_arg})
+    list(GET ARGV ${output_arg} mexfilename)
+    list(REMOVE_AT ARGV ${output_arg})
+  else()
+    set(mexfilename ${target})
+  endif()
+
   list(FIND ARGV SHARED isshared)
   list(FIND ARGV EXECUTABLE isexe)
   if (isexe GREATER -1)
     list(REMOVE_ITEM ARGV EXECUTABLE)
     add_executable(${target} ${ARGV})
     set_target_properties(${target} PROPERTIES
-      COMPILE_FLAGS "${MEX_COMPILE_FLAGS}")
+      COMPILE_FLAGS "${MEX_COMPILE_FLAGS}"
+      OUTPUT_NAME ${mexfilename})
 #      INSTALL_RPATH "${CMAKE_INSTALL_PATH};${MEX_RPATH}")
     if (CMAKE_COMPILER_IS_GNUCC OR CMAKE_COMPILER_IS_GNUCXX)
       target_link_libraries(${target} liblast)
@@ -307,7 +317,8 @@ function(add_mex)
   elseif (isshared GREATER -1)
     add_library(${target} ${ARGV})
     set_target_properties(${target} PROPERTIES
-      COMPILE_FLAGS "${MEX_COMPILE_FLAGS}")
+      COMPILE_FLAGS "${MEX_COMPILE_FLAGS}"
+      OUTPUT_NAME ${mexfilename})
     if (CMAKE_COMPILER_IS_GNUCC OR CMAKE_COMPILER_IS_GNUCXX)
       target_link_libraries(${target} liblast)
     else()
@@ -334,6 +345,7 @@ function(add_mex)
       LINK_FLAGS_RELWITHDEBINFO	"${MEXLIB_LDFLAGS} ${MEX_LDDEBUGFLAGS} ${MEX_LDOPTIMFLAGS}"
       ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}"
       LIBRARY_OUTPUT_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}"
+      OUTPUT_NAME ${mexfilename}
       )
     foreach( OUTPUTCONFIG ${CMAKE_CONFIGURATION_TYPES} )
       string( TOUPPER ${OUTPUTCONFIG} OUTPUTCONFIG )
