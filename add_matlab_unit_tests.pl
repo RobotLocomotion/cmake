@@ -27,7 +27,7 @@ if ($^O eq 'cygwin') {
 }
 
 # write unit tests to pod-build/matlab_ctests
-system("$matlab_cmd -r \"addpath('$CMAKE_INSTALL_PREFIX/matlab'); addpath_$POD_NAME; options.gui = false; options.autorun = false; options.test_list_file = 'pod-build/matlab_ctests'; unitTest(options); exit;\"");
+system("$matlab_cmd -r \"cd('$CMAKE_SOURCE_DIR'); addpath('$CMAKE_INSTALL_PREFIX/matlab'); addpath_$POD_NAME; options.gui = false; options.autorun = false; options.test_list_file = 'pod-build/matlab_ctests'; unitTest(options); exit;\"");
 
 if ($? == 0) {
   open(my $in, 'pod-build/matlab_ctests');
@@ -46,9 +46,8 @@ if ($? == 0) {
     if ($RANDOMIZE_UNIT_TESTS eq "ON") {
       print $ctestfile "rng('shuffle'); rng_state=rng; disp(sprintf('To reproduce this test use rng(%d,''%s'')',rng_state.Seed,rng_state.Type)); disp(' '); "
     }
-    print $ctestfile "addpath('$CMAKE_INSTALL_PREFIX/matlab'); addpath_$POD_NAME; global g_disable_visualizers; g_disable_visualizers=true; try, fevalPackageSafe('$test'); catch ex, disp(getReport(ex,'extended')); disp(' '); fprintf('<test_name>%s</test_name> <error_id>%s</error_id> <error_message>%s</error_message>','$testname',ex.identifier,ex.message); disp(' '); force_close_system; exit($failcondition); end; force_close_system; exit(0)\")\n";
+    print $ctestfile "addpath('$CMAKE_INSTALL_PREFIX/matlab'); addpath_$POD_NAME; cd('$testdir'); global g_disable_visualizers; g_disable_visualizers=true; try, fevalPackageSafe('$test'); catch ex, disp(getReport(ex,'extended')); disp(' '); fprintf('<test_name>%s</test_name> <error_id>%s</error_id> <error_message>%s</error_message>','$testname',ex.identifier,ex.message); disp(' '); force_close_system; exit($failcondition); end; force_close_system; exit(0)\")\n";
 
-    $props = "WORKING_DIRECTORY \"$testdir\" $props";
     print $ctestfile "SET_TESTS_PROPERTIES($testname PROPERTIES " . $props .")\n";
   }
 }
