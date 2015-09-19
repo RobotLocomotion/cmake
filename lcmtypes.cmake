@@ -113,7 +113,7 @@ if (LCM_FOUND)
 
    if (WIN32)
      # set the path to the lcm libs (shouldn't even need anything else in the path) so that lcm-gen will work
-     set(LCM_GEN_EXECUTABLE ${CMAKE_COMMAND} -E env PATH="${CMAKE_INSTALL_PREFIX}/lib" COMMAND ${LCM_GEN_EXECUTABLE})
+     set(LCM_GEN_EXECUTABLE ${CMAKE_COMMAND} -E env PATH=${CMAKE_INSTALL_PREFIX}/lib "${LCM_GEN_EXECUTABLE}")
      # todo: actually search for the lib (instead of hard-coding it the pod version)
    endif()
 endif()
@@ -383,9 +383,10 @@ function(add_c_lcmtype lcmtype)
   endif()
   set(lcmtype_w_package "${package_prefix}${lcmtype_we}")
 
+  # used to have:  --cinclude lcmtypes
   add_custom_command(OUTPUT "${LCMTYPES_DIR}/${lcmtype_w_package}.c" "${LCMTYPES_DIR}/${lcmtype_w_package}.h"
-  		     COMMAND "${LCM_GEN_EXECUTABLE}" --c "${lcmtype}" # --cinclude lcmtypes
-		     DEPENDS ${lcmtype}
+  		     COMMAND ${LCM_GEN_EXECUTABLE} --c "${lcmtype}"
+		     DEPENDS "${lcmtype}"
 		     WORKING_DIRECTORY ${LCMTYPES_DIR})
   set(LCMTYPES_C_SOURCEFILES ${LCMTYPES_C_SOURCEFILES} "${LCMTYPES_DIR}/${lcmtype_w_package}.c" PARENT_SCOPE)
 
@@ -406,8 +407,8 @@ function(add_cpp_lcmtype lcmtype)
   set(lcmtype_w_package "${package_prefix}${lcmtype_we}")
 
   add_custom_command(OUTPUT "${LCMTYPES_DIR}/${lcmtype_w_package}.hpp"
-  		     COMMAND "${LCM_GEN_EXECUTABLE}" --cpp "${lcmtype}" #--cpp-include lcmtypes
-		     DEPENDS ${lcmtype}
+  		     COMMAND ${LCM_GEN_EXECUTABLE} --cpp "${lcmtype}" --cpp-include lcmtypes
+		     DEPENDS "${lcmtype}"
 		     WORKING_DIRECTORY ${LCMTYPES_DIR})
   set(LCMTYPES_CPP_HEADERFILES ${LCMTYPES_CPP_HEADERFILES} "${LCMTYPES_DIR}/${lcmtype_w_package}.hpp" PARENT_SCOPE)
 
@@ -430,8 +431,8 @@ function(add_java_lcmtype lcmtype)
   set(lcmtype_w_package "${package_prefix}${lcmtype_we}")
 
   add_custom_command(OUTPUT "${LCMTYPES_DIR}/${lcmtype_w_package}.java"
-  		     COMMAND "${LCM_GEN_EXECUTABLE}" --jdefaultpkg "lcmtypes" --java "${lcmtype}"
-		     DEPENDS ${lcmtype}
+  		     COMMAND ${LCM_GEN_EXECUTABLE} --jdefaultpkg "lcmtypes" --java "${lcmtype}"
+		     DEPENDS "${lcmtype}"
 		     WORKING_DIRECTORY ${LCMTYPES_DIR})
   set(LCMTYPES_JAVA_SOURCEFILES ${LCMTYPES_JAVA_SOURCEFILES} "${LCMTYPES_DIR}/${lcmtype_w_package}.java" PARENT_SCOPE)
 
@@ -452,8 +453,8 @@ function(add_python_lcmtype lcmtype)
   set(lcmtype_w_package "${package_prefix}${lcmtype_we}")
 
   add_custom_command(OUTPUT "${LCMTYPES_DIR}/${lcmtype_w_package}.py"
-      		     COMMAND "${LCM_GEN_EXECUTABLE}" --python "${lcmtype}"
-		     DEPENDS ${lcmtype}
+      		     COMMAND ${LCM_GEN_EXECUTABLE} --python "${lcmtype}"
+		     DEPENDS "${lcmtype}"
 		     WORKING_DIRECTORY ${LCMTYPES_DIR})
 
   set(LCMTYPES_PYTHON_FILES ${LCMTYPES_PYTHON_FILES} "${LCMTYPES_DIR}/${lcmtype_w_package}.py" PARENT_SCOPE)
