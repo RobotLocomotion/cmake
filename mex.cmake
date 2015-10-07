@@ -146,6 +146,12 @@ function(mex_setup)
 #       	  execute_process(COMMAND mkdir ${tempdir})
 #          message("Creating temporary directory: ${tempdir}")
 #    	endif()
+
+        # newer version of matlab set the alignment, which (I believe) is interfering with the eigen alignment
+        # zap that compiler argument
+        string(REGEX REPLACE "/Zp[0-9]*" "" MEX_CFLAGS "${MEX_CFLAGS}")
+        string(REGEX REPLACE "/Zp[0-9]*" "" MEX_CXXFLAGS "${MEX_CXXFLAGS}")
+
         string(REGEX REPLACE "/implib:.*templib.x\"" "" MEX_LDFLAGS "${MEX_LDFLAGS}")
 	string(REGEX REPLACE "/MAP:\"[.a-zA-Z0-9]*\"" "" MEX_LDFLAGS "${MEX_LDFLAGS}")
 	string(REGEX REPLACE "/PDB:\"[.a-xA-Z0-9]*\"" "" MEX_LDDEBUGFLAGS "{MED_LDDEBUGFLAGS}")
