@@ -524,7 +524,7 @@ function(pods_use_pkg_config_packages target)
 	    if (__inc_dir)
 	      c_compiler_path(__inc_dir)
       #	    message("include: ${__inc_dir}")
-        include_directories(${__inc_dir})
+        include_directories(SYSTEM ${__inc_dir})
       endif()
     endforeach()
 
@@ -588,7 +588,7 @@ macro(pods_use_pkg_config_includes)
     string(REPLACE "-I" "" _pods_pkg_include_flags "${_pods_pkg_include_flags}")
 
     c_compiler_path(_pods_pkg_include_flags)
-    include_directories(${_pods_pkg_include_flags})
+    include_directories(SYSTEM ${_pods_pkg_include_flags})
   endif()
 endmacro()
 
@@ -684,10 +684,6 @@ macro(pods_config_search_paths)
 
       shell_path(PKG_CONFIG_OUTPUT_PATH)
       shell_path(PKG_CONFIG_INSTALL_PATH)
-
-      # add build/include to the compiler include path
-      include_directories(BEFORE ${INCLUDE_OUTPUT_PATH})
-      include_directories(${INCLUDE_INSTALL_PATH})
 
       # add build/lib to the link path
       link_directories(${LIBRARY_OUTPUT_PATH})
