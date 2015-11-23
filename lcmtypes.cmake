@@ -365,10 +365,9 @@ endmacro()
 macro(get_package_name lcmtype)
   # extract package name from lcm file.
   # creates variable ${_package_name}
-  # todo: make this more robust
-
-  execute_process(COMMAND sed -n -e "s/^.*package[[:space:]]*\\(.*\\);[[:space:]]*$/\\1/p" "${lcmtype}" OUTPUT_VARIABLE _package_name OUTPUT_STRIP_TRAILING_WHITESPACE)
-
+  file(STRINGS "${lcmtype}" package_line REGEX "^.*package.*;")
+  string(REGEX REPLACE "^.*package([^\\\\;]+).*;" "\\1" result "${package_line}")
+  string(STRIP "${result}" _package_name)
 endmacro()
 
 function(add_c_lcmtype lcmtype)
