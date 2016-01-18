@@ -121,7 +121,7 @@ function(mex_setup)
   set(simulink_FOUND ${simulink_FOUND} PARENT_SCOPE)
 
   file(WRITE ${CMAKE_CURRENT_BINARY_DIR}/dummy.c "")
-  execute_process(COMMAND ${mex} -largeArrayDims -v ${CMAKE_CURRENT_BINARY_DIR}/dummy.c OUTPUT_VARIABLE mexv_output ERROR_QUIET OUTPUT_STRIP_TRAILING_WHITESPACE)
+  execute_process(COMMAND ${mex} -largeArrayDims -v ${CMAKE_CURRENT_BINARY_DIR}/dummy.c TIMEOUT 5 OUTPUT_VARIABLE mexv_output ERROR_QUIET OUTPUT_STRIP_TRAILING_WHITESPACE)
 
   if ( WIN32 )
     get_mex_option(CC NAMES COMPILER REQUIRED)
