@@ -566,7 +566,7 @@ function(pods_use_pkg_config_packages target)
 
     if (PODS_PKG_CFLAGS_OTHER)
       # TODO: Handle more PODS_PKG_CFLAGS_OTHER flags
-      string(FIND ${PODS_PKG_CFLAGS_OTHER} "-pthread" PTHREAD_POS)
+      string(FIND "${PODS_PKG_CFLAGS_OTHER}" "-pthread" PTHREAD_POS)
 
       # handle pthread
       if (PTHREAD_POS GREATER -1)
