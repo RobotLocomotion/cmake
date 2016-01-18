@@ -564,7 +564,23 @@ function(pods_use_pkg_config_packages target)
   	  target_link_libraries(${target} ${PODS_PKG_LDFLAGS_OTHER})
     endif()
 
-    # TODO: Handle PODS_PKG_CFLAGS_OTHER
+    if (PODS_PKG_CFLAGS_OTHER)
+      # TODO: Handle more PODS_PKG_CFLAGS_OTHER flags
+      string(FIND ${PODS_PKG_CFLAGS_OTHER} "-pthread" PTHREAD_POS)
+
+      # handle pthread
+      if (PTHREAD_POS GREATER -1)
+        # from http://stackoverflow.com/a/29871891
+        find_package(Threads REQUIRED)
+        if (THREADS_HAVE_PTHREAD_ARG)
+          set_property(TARGET ${target} PROPERTY COMPILE_OPTIONS "-pthread")
+          set_property(TARGET ${target} PROPERTY INTERFACE_COMPILE_OPTIONS "-pthread")
+        endif()
+        if (CMAKE_THREAD_LIBS_INIT)
+          target_link_libraries(${target} "${CMAKE_THREAD_LIBS_INIT}")
+        endif()
+      endif()
+    endif(PODS_PKG_CFLAGS_OTHER)
   endif()
 endfunction()
 
