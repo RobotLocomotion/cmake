@@ -120,8 +120,8 @@ function(mex_setup)
   set(MEX_EXT ${MEX_EXT} PARENT_SCOPE)
   set(simulink_FOUND ${simulink_FOUND} PARENT_SCOPE)
 
-  file(WRITE ${CMAKE_CURRENT_BINARY_DIR}/dummy.c "")
-  execute_process(COMMAND ${mex} -largeArrayDims -v ${CMAKE_CURRENT_BINARY_DIR}/dummy.c OUTPUT_VARIABLE mexv_output ERROR_QUIET OUTPUT_STRIP_TRAILING_WHITESPACE)
+  file(WRITE ${CMAKE_CURRENT_BINARY_DIR}/dummy_mex.c "")
+  execute_process(COMMAND ${mex} -largeArrayDims -v ${CMAKE_CURRENT_BINARY_DIR}/dummy_mex.c OUTPUT_VARIABLE mexv_output ERROR_QUIET OUTPUT_STRIP_TRAILING_WHITESPACE)
 
   if ( WIN32 )
     get_mex_option(CC NAMES COMPILER REQUIRED)
