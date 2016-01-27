@@ -309,8 +309,6 @@ function(lcmtypes_build_python)
 
     # install python files (would use pods_install_python_packages(${LCMTYPES_DIR}), but it would fail because the files don't exist yet)
 
-    file(WRITE ${LCMTYPES_DIR}/lcmtypes/__init__.py "")
-
     find_package(PythonInterp)
     if (NOT PYTHON_EXECUTABLE)
       message(STATUS "Python not found.  Python lcmtypes will not be generatied")
@@ -453,12 +451,12 @@ function(add_python_lcmtype lcmtype)
   endif()
   set(lcmtype_w_package "${package_prefix}${lcmtype_we}")
 
-  add_custom_command(OUTPUT "${LCMTYPES_DIR}/lcmtypes/${lcmtype_w_package}.py"
-      		     COMMAND ${LCM_GEN_EXECUTABLE} --python "${lcmtype}" --ppath lcmtypes
+  add_custom_command(OUTPUT "${LCMTYPES_DIR}/${lcmtype_w_package}.py"
+      		     COMMAND ${LCM_GEN_EXECUTABLE} --python "${lcmtype}"
 		     DEPENDS "${lcmtype}"
 		     WORKING_DIRECTORY ${LCMTYPES_DIR})
 
-  set(LCMTYPES_PYTHON_FILES ${LCMTYPES_PYTHON_FILES} "${LCMTYPES_DIR}/lcmtypes/${lcmtype_w_package}.py" PARENT_SCOPE)
+  set(LCMTYPES_PYTHON_FILES ${LCMTYPES_PYTHON_FILES} "${LCMTYPES_DIR}/${lcmtype_w_package}.py" PARENT_SCOPE)
 endfunction()
 
 
