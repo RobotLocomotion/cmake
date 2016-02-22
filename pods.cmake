@@ -744,7 +744,9 @@ project(${POD_NAME})
 set(POD_NAME "${POD_NAME}" CACHE STRING "${POD_NAME}" )
 
 # PODs out-of-source build logic
-if (CMAKE_INSTALL_PREFIX STREQUAL "/usr/local" OR CMAKE_INSTALL_PREFIX STREQUAL "C:/Program Files/Project") 
+if (CMAKE_INSTALL_PREFIX STREQUAL "/usr/local" OR
+    CMAKE_INSTALL_PREFIX STREQUAL "C:/Program Files/Project" OR
+    CMAKE_INSTALL_PREFIX STREQUAL "C:/Program Files (x86)/Project")
   find_file(_build_dir build PATHS ${PROJECT_SOURCE_DIR} ${PROJECT_SOURCE_DIR}/.. ${PROJECT_SOURCE_DIR}/../.. ${PROJECT_SOURCE_DIR}/../../.. ${PROJECT_SOURCE_DIR}/../../../..)
   if (_build_dir)
     set(CMAKE_INSTALL_PREFIX "${_build_dir}")
