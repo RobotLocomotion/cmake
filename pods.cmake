@@ -37,14 +37,7 @@
 
 
 function(get_relative_path from to var)
-#  find_package(PythonInterp)
-  find_program(mypy NAMES python2.7 python2.6) # PythonInterp finds a symlink on cygwin, which then fails in the execute process below
-#  message(from=${from})
-#  message(to=${to})
-  get_filename_component(from "${from}" ABSOLUTE)
-  get_filename_component(to "${to}" ABSOLUTE)
-  execute_process(COMMAND "${mypy}" "-c" "import os; print os.path.relpath('${to}','${from}')" OUTPUT_VARIABLE myvar OUTPUT_STRIP_TRAILING_WHITESPACE)
-  set(${var} "${myvar}" PARENT_SCOPE)
+  file(RELATIVE_PATH var from to)
 endfunction()
 
 function(call_cygpath format var)
