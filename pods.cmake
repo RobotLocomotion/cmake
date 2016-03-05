@@ -35,11 +35,6 @@
 # File: pods.cmake
 # Distributed with pods version: 12.11.14
 
-
-function(get_relative_path from to var)
-  file(RELATIVE_PATH var from to)
-endfunction()
-
 function(call_cygpath format var)
 #  message(STATUS "calling cygpath with ${format} ${${var}}")
 #  message("before cygpath: ${${var}}")
