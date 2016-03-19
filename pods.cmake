@@ -42,6 +42,10 @@ function(call_cygpath format var)
   if (NOT ${var})  # do nothing if var is empty
     return()
   endif()
+  # this only works if the incoming path is unix style /
+  # otherwise the zap the \ removes all the directory separators
+  # so convert to cmake path first
+  file(TO_CMAKE_PATH  ${${var}}  ${var})
   string(REGEX REPLACE "([^\\\\]) " "\\1;" ${var} ${${var}})  # separate arguments didn't respect the "Program\ Files"... it resulted in "Program;Files"
   string(REGEX REPLACE "\\\\" "" ${var} "${${var}}")  # now zap the \
   string(STRIP ${${var}} ${var})
@@ -83,7 +87,10 @@ endmacro()
 
 macro(shell_path var)
   if (WIN32 AND cygpath AND ${var})
-    call_cygpath(-u ${var})
+    # we never want /cygdrive as cmake and other
+    # native tools will not know what that is, so
+    # use -m to get unix paths with drive:
+    call_cygpath(-m ${var})
   endif()
 endmacro()
 
