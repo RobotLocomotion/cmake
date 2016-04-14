@@ -631,7 +631,7 @@ function(matlab_get_version_from_matlab_run matlab_binary_program matlab_list_ve
     set(devnull INPUT_FILE NUL)
   endif()
 
-  # timeout set to 30 seconds, in case it does not start
+  # timeout set to 120 seconds, in case it does not start
   # note as said before OUTPUT_VARIABLE cannot be used in a platform
   # independent manner however, not setting it would flush the output of Matlab
   # in the current console (unix variant)
@@ -640,12 +640,17 @@ function(matlab_get_version_from_matlab_run matlab_binary_program matlab_list_ve
     OUTPUT_VARIABLE _matlab_version_from_cmd_dummy
     RESULT_VARIABLE _matlab_result_version_call
     ERROR_VARIABLE _matlab_result_version_call_error
-    TIMEOUT 30
+    TIMEOUT 120
     WORKING_DIRECTORY "${_matlab_temporary_folder}"
     ${devnull}
     )
-
-
+  if("${_matlab_result_version_call}" MATCHES "timeout")
+    if(MATLAB_FIND_DEBUG)
+      message(WARNING "[MATLAB] Unable to determine the version of Matlab."
+        " Matlab call timed out after 120 seconds.")
+    endif()
+    return()
+  endif()
   if(${_matlab_result_version_call})
     if(MATLAB_FIND_DEBUG)
       message(WARNING "[MATLAB] Unable to determine the version of Matlab. Matlab call returned with error ${_matlab_result_version_call}.")
@@ -1044,9 +1049,11 @@ function(_Matlab_get_version_from_root matlab_root matlab_known_version matlab_f
 
   set(matlab_list_of_all_versions)
   matlab_get_version_from_matlab_run("${Matlab_PROG_VERSION_STRING_AUTO_DETECT}" matlab_list_of_all_versions)
-
-  list(GET matlab_list_of_all_versions 0 _matlab_version_tmp)
-
+  if(matlab_list_of_all_versions)
+    list(GET matlab_list_of_all_versions 0 _matlab_version_tmp)
+  else()
+    set(_matlab_version_tmp "unknown")
+  endif()
   # set the version into the cache
   set(Matlab_VERSION_STRING_INTERNAL ${_matlab_version_tmp} CACHE INTERNAL "Matlab version (automatically determined)" FORCE)
 
