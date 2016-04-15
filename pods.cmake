@@ -86,11 +86,15 @@ macro(pkg_config_path var)
 endmacro()
 
 macro(shell_path var)
-  if (WIN32 AND cygpath AND ${var})
-    # we never want /cygdrive as cmake and other
-    # native tools will not know what that is, so
-    # use -m to get unix paths with drive:
-    call_cygpath(-m ${var})
+  if (WIN32)
+    if (cygpath AND ${var})
+      # we never want /cygdrive as cmake and other
+      # native tools will not know what that is, so
+      # use -m to get unix paths with drive:
+      call_cygpath(-m ${var})
+    else()
+      file(TO_CMAKE_PATH ${${var}} ${var})
+    endif()
   endif()
 endmacro()
 
