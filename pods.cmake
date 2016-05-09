@@ -35,69 +35,14 @@
 # File: pods.cmake
 # Distributed with pods version: 12.11.14
 
-function(call_cygpath format var)
-#  message(STATUS "calling cygpath with ${format} ${${var}}")
-#  message("before cygpath: ${${var}}")
-#  separate_arguments(${var})
-  if (NOT ${var})  # do nothing if var is empty
-    return()
-  endif()
-  # this only works if the incoming path is unix style /
-  # otherwise the zap the \ removes all the directory separators
-  # so convert to cmake path first
-  file(TO_CMAKE_PATH  ${${var}}  ${var})
-  string(REGEX REPLACE "([^\\\\]) " "\\1;" ${var} ${${var}})  # separate arguments didn't respect the "Program\ Files"... it resulted in "Program;Files"
-  string(REGEX REPLACE "\\\\" "" ${var} "${${var}}")  # now zap the \
-  string(STRIP ${${var}} ${var})
-  execute_process(COMMAND ${cygpath} ${format} ${${var}} OUTPUT_VARIABLE varout OUTPUT_STRIP_TRAILING_WHITESPACE)
-  string(REGEX REPLACE "(\r?\n)+" ";" varout ${varout})
-#  message("after cygpath ${format}: ${varout}")
-  set(${var} ${varout} PARENT_SCOPE)
-endfunction()
-
 # On windows, the compilers and the shell commands (potentially) use different syntax for their path strings.
 # These macros try to handle that case as cleanly as possible, and do nothing on non-windows
-macro(c_compiler_path var)
-  if (WIN32 AND cygpath AND ${var})
-    call_cygpath(-m ${var})
-  endif()
-endmacro()
-
-macro(java_compiler_path var)
-  if (WIN32 AND cygpath AND ${var})
-    call_cygpath(-m ${var})
-  endif()
-endmacro()
-
-macro(cmake_path var)
-  if (WIN32 AND cygpath AND ${var})
-    call_cygpath(-m ${var})
-  endif()
-endmacro()
 
 macro(pkg_config_path var)
   if (WIN32)
-    if (cygpath AND ${var})
-      call_cygpath(-w ${var})
-    else()
-      string(REGEX REPLACE "\\/" "\\\\" ${var} ${${var}})
-    endif()
+    string(REGEX REPLACE "\\/" "\\\\" ${var} ${${var}})
   endif()
 endmacro()
-
-macro(shell_path var)
-  if (WIN32)
-    if (cygpath AND ${var})
-      # we never want /cygdrive as cmake and other
-      # native tools will not know what that is, so
-      # use -m to get unix paths with drive:
-      call_cygpath(-m ${var})
-    else()
-      file(TO_CMAKE_PATH ${${var}} ${var})
-    endif()
-  endif()
-endmacro()
-
 
 # pods_install_headers(<header1.h> ... DESTINATION <subdir_name>)
 #
@@ -207,7 +152,6 @@ function(pods_install_pkg_config_file)
     endforeach(word)
 
     set(prefix ${CMAKE_INSTALL_PREFIX})
-    shell_path(prefix)
 
     # write the .pc file out
     file(WRITE ${pc_fname}
@@ -253,7 +197,6 @@ function(pods_install_bash_setup package)
   endif()
 
   set(prefix ${CMAKE_INSTALL_PREFIX})
-  shell_path(prefix)
 
   set(filename ${PROJECT_BINARY_DIR}/config/pods_setup_all.sh)
   file(WRITE ${filename}
@@ -521,7 +464,6 @@ function(pods_use_pkg_config_packages target)
   	foreach (__inc_dir ${PODS_PKG_INCLUDE_DIRS})
       string(STRIP ${__inc_dir} __inc_dir)
 	    if (__inc_dir)
-	      c_compiler_path(__inc_dir)
       #	    message("include: ${__inc_dir}")
         include_directories(SYSTEM ${__inc_dir})
       endif()
@@ -530,7 +472,6 @@ function(pods_use_pkg_config_packages target)
   	foreach(__ld_dir ${PODS_PKG_LIBRARY_DIRS})
   	  string(STRIP ${__ld_dir} __ld_dir)
   	  if (__ld_dir)
-  	    c_compiler_path(__ld_dir)
   	    if (WIN32)  # only MSVC?
           target_link_libraries(${target} "-LIBPATH:${__ld_dir}")
         else()
@@ -602,7 +543,6 @@ macro(pods_use_pkg_config_includes)
     string(STRIP ${_pods_pkg_include_flags} _pods_pkg_include_flags)
     string(REPLACE "-I" "" _pods_pkg_include_flags "${_pods_pkg_include_flags}")
 
-    c_compiler_path(_pods_pkg_include_flags)
     include_directories(SYSTEM ${_pods_pkg_include_flags})
   endif()
 endmacro()
@@ -637,7 +577,7 @@ function(pods_use_pkg_config_classpath)
       if (NOT WIN32)
         string(REPLACE ":" " " _pods_pkg_classpath_flags ${_pods_pkg_classpath_flags})
       endif()
-      java_compiler_path(_pods_pkg_classpath_flags)
+
       if (NOT WIN32)
         string(REPLACE " " ":" _pods_pkg_classpath_flags ${_pods_pkg_classpath_flags})
       endif()
@@ -697,9 +637,6 @@ macro(pods_config_search_paths)
       	set(ENV{PKG_CONFIG_PATH} "${PKG_CONFIG_OUTPUT_PATH}:${PKG_CONFIG_INSTALL_PATH}:$ENV{PKG_CONFIG_PATH}")
       endif()
 
-      shell_path(PKG_CONFIG_OUTPUT_PATH)
-      shell_path(PKG_CONFIG_INSTALL_PATH)
-
       # add build/lib to the link path
       link_directories(${LIBRARY_OUTPUT_PATH})
       link_directories(${LIBRARY_INSTALL_PATH})
@@ -755,11 +692,6 @@ if (CMAKE_INSTALL_PREFIX STREQUAL "/usr/local" OR
   endif() 
 endif()
 message(STATUS CMAKE_INSTALL_PREFIX=${CMAKE_INSTALL_PREFIX})
-
-if ( WIN32 ) # convert to windows paths
-   find_program(cygpath cygpath)
-endif()
-cmake_path(CMAKE_INSTALL_PREFIX)
 
 #make sure we're running an out-of-source build
 enforce_out_of_source()
